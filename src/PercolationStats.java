@@ -5,33 +5,44 @@ import edu.princeton.cs.algs4.*;
  * Created by sdj on 12/26/16.
  */
 public class PercolationStats {
-    int row,col;
-    int n;
-    int trails;
-    double [] succTrial = null;
+    private int row,col;
+    private int n;
+    private int trails;
+    private double [] succTrial = null;
+    private Percolation percObj;
 
     public PercolationStats(int n,int trails){
         if(n<=0 || trails <=0)
             throw new IllegalArgumentException();
         this.n = n;
         this.trails = trails;
-        Percolation percObj;
         succTrial = new double[trails];
         int i = 0;
         while(trails>0){
             percObj = new Percolation(n);
             while(!percObj.percolates()){
-                twoDtranslator(StdRandom.uniform(0,n*n));
-                percObj.open(this.row,this.col);
+                //twoDtranslator(StdRandom.uniform(n*n));
+                percObj.open(StdRandom.uniform(1,n+1),StdRandom.uniform(1,n+1));
             }
-            succTrial[i] = percObj.getNumberOpen()/(n*n);
+            succTrial[i] = ((double)this.getNumberOpen())/((double)n*n);
             i++;
             trails--;
         }
     }
 
+    private int getNumberOpen(){
+        int count=0;
+        for(int i=0;i<n;i++){
+         for(int j=0;j<n;j++){
+             if(this.percObj.isOpen(i+1,j+1)){
+                 count++;
+             }
+         }
+        }
+        return count;
+    }
     // send as zero index
-    public void twoDtranslator(double q){
+    private void twoDtranslator(double q){
         this.row = (int)q/n;
         this.row++;
         this.col = (int)q%20;

@@ -6,40 +6,38 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
  */
 public class Percolation
 {
-    int n;
-    WeightedQuickUnionUF wfObj = null;
-    boolean data[][];
-    int numberOpen = 0;
+    private int n;
+    private WeightedQuickUnionUF wfObj = null;
+    private boolean data[][];
 
-    public Percolation(int n){
-        if(n<=0){
+    public Percolation(int n)
+    {
+        if(n<=0)
+        {
             throw  new IllegalArgumentException();
         }
         this.n = n;
-        wfObj = new WeightedQuickUnionUF(n*n);
+        wfObj = new WeightedQuickUnionUF((n*n)+2);
         data = new boolean[n][n];
         for(int i=0;i<n;i++)
             for(int j=0;j<n;j++)
                 data[i][j] = false;
     }
 
-    public int getNumberOpen(){
-        return  this.numberOpen;
-    }
-    public int oneDTranslator(int row,int col){
+    private int oneDTranslator(int row,int col)
+    {
         return ((row-1)*n)+col-1;
     }
 
-    public void union(int oneDrep,int row,int col){
+    private void union(int oneDrep,int row,int col)
+    {
         if(data[row-1][col-1]){
-            //System.out.println(oneDrep);
-            //System.out.println(row + " " + col);
-            //System.out.println(oneDTranslator(row,col));
             wfObj.union(oneDrep,oneDTranslator(row,col));
         }
     }
 
-    public void cornerCase(int oneDrep,int row,int col){
+    private void cornerCase(int oneDrep,int row,int col)
+    {
         if(col-1 == 0 ){
             this.union(oneDrep,row,col+1);
         }else if(col-1==n-1){
@@ -55,8 +53,18 @@ public class Percolation
             throw new IndexOutOfBoundsException();
         }
         this.data[row-1][col-1] = true;
-        numberOpen++;
         int oneDrep = oneDTranslator(row,col);
+        if(n==1){
+            return;
+        }
+        // Connecting to virtual layers
+        if(row==1){
+            this.union((n*n),row,col);
+        }else if(row==n && this.isFull(row,col)){
+            this.union((n*n)+1,row,col);
+        }
+
+        // Connecting to top down left right
         if(row-1 == 0){
             this.union(oneDrep,row+1,col);
             cornerCase(oneDrep,row,col);
@@ -85,28 +93,41 @@ public class Percolation
     }
     public boolean isFull(int row, int col)  // is site (row, col) full?
     {
-        for(int i=0;i<n;i++){
-            if(this.wfObj.connected(oneDTranslator(1,i+1),oneDTranslator(row,col)))
-                return true;
-        }
+        if(this.data[row-1][col-1] && this.wfObj.connected(n*n,oneDTranslator(row,col)))
+            return true;
         return false;
     }
     public boolean percolates()              // does the system percolate?
     {
-        for(int i=0;i<n;i++)
-            for(int j=0;j<n;j++)
-                if(this.wfObj.connected(oneDTranslator(n,i+1),oneDTranslator(1,j+1)))
-                    return true;
+        if((n==1 && data[0][0]) || this.wfObj.connected((n*n),(n*n)+1))
+            return true;
         return false;
     }
 
-
+    public int numberOfOpenSites()
+    {
+        int count = 0;
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                count += (data[i][j])?1:0;
+            }
+        }
+        return  count;
+    }
     public static void main(String[] args)   // test client (optional)
     {
         int n = StdIn.readInt();
         Percolation percObj = new Percolation(n);
+        PercolationVisualizer percVis = new PercolationVisualizer();
+        int i=0;
+        int a=0,b=0;
         while(!StdIn.isEmpty()){
-            percObj.open(StdIn.readInt(),StdIn.readInt());
+            a = StdIn.readInt();
+            b =StdIn.readInt();
+            percObj.open(a,b);
+            i++;
         }
         System.out.println(percObj.percolates());
     }
