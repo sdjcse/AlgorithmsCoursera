@@ -8,6 +8,7 @@ public class Percolation
 {
     private int n;
     private WeightedQuickUnionUF wfObj = null;
+    private WeightedQuickUnionUF wfObjCopy = null;
     private boolean data[][];
 
     public Percolation(int n)
@@ -18,6 +19,7 @@ public class Percolation
         }
         this.n = n;
         wfObj = new WeightedQuickUnionUF((n*n)+2);
+        wfObjCopy = new WeightedQuickUnionUF((n*n)+2);
         data = new boolean[n][n];
         for(int i=0;i<n;i++)
             for(int j=0;j<n;j++)
@@ -33,6 +35,7 @@ public class Percolation
     {
         if(data[row-1][col-1]){
             wfObj.union(oneDrep,oneDTranslator(row,col));
+            wfObjCopy.union(oneDrep,oneDTranslator(row,col));
         }
     }
 
@@ -55,13 +58,15 @@ public class Percolation
         this.data[row-1][col-1] = true;
         int oneDrep = oneDTranslator(row,col);
         if(n==1){
+            this.union(1,1,1);
+            this.union(2,1,1);
             return;
         }
         // Connecting to virtual layers
         if(row==1){
             this.union((n*n),row,col);
-        }else if(row==n && this.isFull(row,col)){
-            this.union((n*n)+1,row,col);
+        }else if(row==n){
+            wfObjCopy.union((n*n)+1,oneDTranslator(row,col));
         }
 
         // Connecting to top down left right
@@ -85,7 +90,6 @@ public class Percolation
             this.union(oneDrep,row,col+1);
             this.union(oneDrep,row+1,col);
         }
-
     }
     public boolean isOpen(int row, int col)  // is site (row, col) open?
     {
@@ -97,9 +101,9 @@ public class Percolation
             return true;
         return false;
     }
-    public boolean percolates()              // does the system percolate?
+    public boolean percolates()                 // does the system percolate?
     {
-        if((n==1 && data[0][0]) || this.wfObj.connected((n*n),(n*n)+1))
+        if((n==1 && data[0][0]) || this.wfObjCopy.connected((n*n),(n*n)+1))
             return true;
         return false;
     }
@@ -120,14 +124,20 @@ public class Percolation
     {
         int n = StdIn.readInt();
         Percolation percObj = new Percolation(n);
-        PercolationVisualizer percVis = new PercolationVisualizer();
-        int i=0;
-        int a=0,b=0;
+        int a,b;
+//        int i=0;
+//        PercolationVisualizer percVis = new PercolationVisualizer();
         while(!StdIn.isEmpty()){
             a = StdIn.readInt();
-            b =StdIn.readInt();
-            percObj.open(a,b);
-            i++;
+            b=StdIn.readInt();
+//            if(i!=33)
+                percObj.open(a,b);
+//            if(i==33){
+//                percObj.open(a,b);
+//                percVis.draw(percObj,n);
+//            }
+            // i++;
+          //  System.out.println(percObj.isFull(1,1));
         }
         System.out.println(percObj.percolates());
     }

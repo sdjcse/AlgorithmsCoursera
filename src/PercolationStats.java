@@ -9,9 +9,10 @@ public class PercolationStats {
     private int n;
     private int trails;
     private double [] succTrial = null;
-    private Percolation percObj;
+
 
     public PercolationStats(int n,int trails){
+        Percolation percObj;
         if(n<=0 || trails <=0)
             throw new IllegalArgumentException();
         this.n = n;
@@ -24,29 +25,22 @@ public class PercolationStats {
                 //twoDtranslator(StdRandom.uniform(n*n));
                 percObj.open(StdRandom.uniform(1,n+1),StdRandom.uniform(1,n+1));
             }
-            succTrial[i] = ((double)this.getNumberOpen())/((double)n*n);
+            succTrial[i] = ((double)this.getNumberOpen(percObj))/((double)n*n);
             i++;
             trails--;
         }
     }
 
-    private int getNumberOpen(){
+    private int getNumberOpen(Percolation percObj){
         int count=0;
         for(int i=0;i<n;i++){
          for(int j=0;j<n;j++){
-             if(this.percObj.isOpen(i+1,j+1)){
+             if(percObj.isOpen(i+1,j+1)){
                  count++;
              }
          }
         }
         return count;
-    }
-    // send as zero index
-    private void twoDtranslator(double q){
-        this.row = (int)q/n;
-        this.row++;
-        this.col = (int)q%20;
-        this.col++;
     }
     public double mean(){
         return StdStats.mean(this.succTrial);
@@ -56,11 +50,11 @@ public class PercolationStats {
     }
     public double confidenceLo()                  // low  endpoint of 95% confidence interval
     {
-        return (StdStats.mean(succTrial) - (1.96*StdStats.stddev(succTrial)/Math.pow(this.trails,1/2)));
+        return (StdStats.mean(succTrial) - (1.96*StdStats.stddev(succTrial)/Math.sqrt(this.trails)));
     }
     public double confidenceHi()                  // high endpoint of 95% confidence interval
     {
-        return (StdStats.mean(succTrial) + (1.96*StdStats.stddev(succTrial)/Math.pow(this.trails,1/2)));
+        return (StdStats.mean(succTrial) + (1.96*StdStats.stddev(succTrial)/Math.sqrt(this.trails)));
     }
 
     public static void main(String[] args){
