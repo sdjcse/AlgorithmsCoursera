@@ -1,3 +1,5 @@
+package com.coursera.algorithms.week1;
+
 /******************************************************************************
  *  Compilation:  javac PercolationVisualizer.java
  *  Execution:    java PercolationVisualizer input.txt
