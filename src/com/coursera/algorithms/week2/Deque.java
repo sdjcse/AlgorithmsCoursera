@@ -8,18 +8,47 @@ import java.util.NoSuchElementException;
  */
 public class Deque<Item> implements Iterable<Item>
 {
-    private int current,end;
+    private int current,end,start;
+    Item[] holder = null;
     public Deque()                           // construct an empty deque
     {
-        Item[] holder = (Item [])new Object[20];
+        start = 0;
+        end = 0;
+        holder = (Item [])new Object[1];
+    }
+
+    // Method to increase size
+    private void increaseSize()
+    {
+        int size = holder.length;
+        Item[] newHolder = (Item [])new Object[size*2];
+        for(int i=0;i<size;i++){
+            newHolder[i] = holder[i];
+        }
+        holder = newHolder;
+    }
+
+    // Method to reduce size
+    private void reduceSize()
+    {
+        if(end-start > (holder.length/4))
+        {
+            return;
+        }
+        Item[] newHolder = (Item [])new Object[holder.length/2];
+        for(int i=0;i<end-start;i++)
+        {
+            newHolder[i] = holder[i];
+        }
+        holder = newHolder;
     }
     public boolean isEmpty()                 // is the deque empty?
     {
-        return false;
+        return end-start==0;
     }
     public int size()                        // return the number of items on the deque
     {
-        return 0;
+        return end-start;
     }
     public void addFirst(Item item)          // add the item to the front
     {
@@ -27,7 +56,16 @@ public class Deque<Item> implements Iterable<Item>
         {
             throw new NullPointerException();
         }
+        if(this.isEmpty())
+        {
+            start = 0;
+            end = 1;
+            holder[start] = item;
+        }
+        else
+        {
 
+        }
     }
     public void addLast(Item item)           // add the item to the end
     {
@@ -39,19 +77,24 @@ public class Deque<Item> implements Iterable<Item>
     }
     public Item removeFirst()                // remove and return the item from the front
     {
-        if(this.isEmpty())
-        {
-            throw new NoSuchElementException();
-        }
-        return (Item)new Object();
+        return generalizedRemove(start,true);
     }
     public Item removeLast()                 // remove and return the item from the end
+    {
+        return generalizedRemove(start,false);
+    }
+
+    private Item generalizedRemove(int index,boolean isStart)
     {
         if(this.isEmpty())
         {
             throw new NoSuchElementException();
         }
-        return (Item)new Object();
+        Item toBeReturned = holder[index];
+        holder[index] = null;
+        start = isStart ? ++start : start;
+        end = !(isStart) ? --end : end;
+        return  toBeReturned;
     }
     public Iterator<Item> iterator()         // return an iterator over items in order from front to end
     {
