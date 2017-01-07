@@ -1,7 +1,5 @@
 package com.coursera.algorithms.week2;
 
-import sun.awt.image.ImageWatched;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -10,6 +8,7 @@ import java.util.NoSuchElementException;
  */
 public class Deque<Item> implements Iterable<Item>
 {
+    // Double ended linked list custom class
     private class LinkedList<Item>
     {
         Item data;
@@ -22,7 +21,7 @@ public class Deque<Item> implements Iterable<Item>
             this.next = null;
             this.prev = null;
         }
-        LinkedList(Item data,LinkedList next,LinkedList prev)
+        LinkedList(Item data, LinkedList<Item> next, LinkedList<Item> prev)
         {
             this.data = data;
             this.next = next;
@@ -32,16 +31,16 @@ public class Deque<Item> implements Iterable<Item>
         {
             return data;
         }
-        public LinkedList getPrev()
+        public LinkedList<Item> getPrev()
         {
             return this.prev;
         }
-        public LinkedList getNext()
+        public LinkedList<Item> getNext()
         {
             return this.next;
         }
     }
-    private LinkedList<Item> startPtr,endPtr;
+    private LinkedList<Item> startPtr, endPtr;
     private int size;
     public Deque()                           // construct an empty deque
     {
@@ -52,7 +51,7 @@ public class Deque<Item> implements Iterable<Item>
 
     public boolean isEmpty()                 // is the deque empty?
     {
-        return startPtr==null;
+        return startPtr == null;
     }
     public int size()                        // return the number of items on the deque
     {
@@ -60,33 +59,37 @@ public class Deque<Item> implements Iterable<Item>
     }
     public void addFirst(Item item)          // add the item to the front
     {
-        if(item == null)
+        if (item == null)
         {
             throw new NullPointerException();
         }
-        LinkedList temp = this.startPtr;
-        this.startPtr = new LinkedList(item,startPtr,null);
-        if(this.endPtr==null)
+        LinkedList<Item> temp = this.startPtr;
+        this.startPtr = new LinkedList<Item>(item, startPtr, null);
+        if (this.endPtr == null)
         {
             this.endPtr = this.startPtr;
-        }else{
+        }
+        else if ( temp != null )
+        {
             temp.prev = this.startPtr;
         }
         this.size++;
     }
     public void addLast(Item item)           // add the item to the end
     {
-        if(item == null)
+        if (item == null)
         {
             throw new NullPointerException();
         }
-        LinkedList temp = endPtr;
-        endPtr = new LinkedList(item,null,endPtr);
+        LinkedList<Item> temp = endPtr;
+        endPtr = new LinkedList<Item>(item, null, endPtr);
 
-        if(startPtr==null)
+        if (startPtr == null)
         {
             startPtr = endPtr;
-        }else{
+        }
+        else if ( temp != null )
+        {
             temp.next = endPtr;
         }
         size++;
@@ -102,7 +105,7 @@ public class Deque<Item> implements Iterable<Item>
 
     private Item generalizedRemove(boolean isStart)
     {
-        if(this.isEmpty())
+        if (this.isEmpty())
         {
             throw new NoSuchElementException();
         }
@@ -110,19 +113,25 @@ public class Deque<Item> implements Iterable<Item>
         if(isStart)
         {
             startPtr = startPtr.getNext();
-            startPtr.prev = null;
+            if (startPtr != null)
+            {
+                startPtr.prev = null;
+            }
         }
         else
         {
             endPtr = endPtr.getPrev();
-            endPtr.next = null;
+            if (endPtr!= null)
+            {
+                endPtr.next = null;
+            }
         }
         size--;
         return temp;
     }
     private class DequeIterator<Item> implements Iterator<Item>
     {
-        private final  Deque obj;
+        private final  Deque<Item> obj;
         private LinkedList<Item> ptr;
         DequeIterator(Deque obj)
         {
@@ -132,7 +141,7 @@ public class Deque<Item> implements Iterable<Item>
         @Override
         public boolean hasNext()
         {
-            return (ptr!=null);
+            return (ptr != null);
         }
 
         @Override
@@ -145,10 +154,14 @@ public class Deque<Item> implements Iterable<Item>
         public Item next()
         {
             Item temp = null;
-            if(this.hasNext())
+            if (this.hasNext())
             {
                 temp = ptr.data;
                 ptr = ptr.next;
+            }
+            else
+            {
+                throw new NoSuchElementException();
             }
             return temp;
         }
@@ -159,32 +172,5 @@ public class Deque<Item> implements Iterable<Item>
     }
     public static void main(String[] args)   // unit testing
     {
-        Deque<Integer> testObj = new Deque<>();
-        testObj.addFirst(10);
-        testObj.addFirst(100);
-        testObj.addFirst(1048);
-        testObj.addFirst(489);
-        testObj.addLast(153);
-        testObj.addLast(15);
-        testObj.addLast(20);
-        Iterator iter = testObj.iterator();
-        while(iter.hasNext())
-        {
-            System.out.println(iter.next());
-        }
-        System.out.println(testObj.size());
-        System.out.println();
-        System.out.println(testObj.removeFirst());
-        System.out.println(testObj.removeFirst());
-        System.out.println(testObj.removeLast());
-        System.out.println(testObj.removeLast());
-        System.out.println(testObj.size());
-        System.out.println();
-        iter = testObj.iterator();
-        while(iter.hasNext())
-        {
-            System.out.println(iter.next());
-        }
-        System.out.println(testObj.size());
     }
 }
