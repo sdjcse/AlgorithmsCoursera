@@ -92,7 +92,7 @@ public class Deque<Item> implements Iterable<Item>
         {
             temp.next = endPtr;
         }
-        size++;
+        this.size++;
     }
     public Item removeFirst()                // remove and return the item from the front
     {
@@ -126,7 +126,11 @@ public class Deque<Item> implements Iterable<Item>
                 endPtr.next = null;
             }
         }
-        size--;
+        if ( --size == 0 )
+        {
+            startPtr = null;
+            endPtr = null;
+        }
         return temp;
     }
     private class DequeIterator<Item> implements Iterator<Item>
@@ -172,5 +176,15 @@ public class Deque<Item> implements Iterable<Item>
     }
     public static void main(String[] args)   // unit testing
     {
+        Deque<Integer> test = new Deque<>();
+        test.addFirst(1);
+        test.removeFirst();
+        test.addFirst(3);
+        test.addLast(4);
+        Iterator<Integer> iter = test.iterator();
+        while(iter.hasNext())
+        {
+            System.out.println(iter.next());
+        }
     }
 }
