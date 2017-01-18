@@ -1,21 +1,15 @@
 package com.coursera.algorithms.week3;
 
+import edu.princeton.cs.algs4.StdDraw;
 import java.util.Comparator;
 
 /**
  * Created by sdj on 1/10/17.
  */
-public class Point
+public class Point implements Comparable<Point>
 {
-    int x,y ;
-    public int getX()
-    {
-        return this.x;
-    }
-    public int getY()
-    {
-        return this.y;
-    }
+    private final int x,y ;
+
     public Point(int x, int y)                         // constructs the point (x, y)
     {
         this.x = x;
@@ -24,29 +18,29 @@ public class Point
 
     public   void draw()                               // draws this point
     {
-
+        StdDraw.point(x, y);
     }
     public   void drawTo(Point that)                   // draws the line segment from this point to that point
     {
-
+        StdDraw.line(this.x, this.y, that.x, that.y);
     }
     public String toString()                           // string representation
     {
-        return "x:" + Integer.toString(x) + ", y: " + Integer.toString(y);
+        return "(" + x + ", " + y + ")";
     }
 
     public int compareTo(Point that)     // compare two points by y-coordinates, breaking ties by x-coordinates
     {
-        return (this.getY() < that.getY() || (this.getY() == that.getY() && this.getX() < that.getX())) ? -1 : (this.getX() == that.getX() && this.getY() == that.getY()) ? 0 : +1;
+        return (this.y < that.y || (this.y == that.y && this.x < that.x)) ? -1 : (this.x == that.x && this.y == that.y) ? 0 : +1;
     }
     public            double slopeTo(Point that)       // the slope between this point and that point
     {
-        double nr = (double) (that.getY()-this.getY());
-        double dr = (double) (that.getX()-this.getX());
+        double nr = (double) (that.y-this.y);
+        double dr = (double) (that.x-this.x);
 
         if(nr==0 && dr == 0)
         {
-            return -Double.MAX_VALUE;
+            return -1*Double.POSITIVE_INFINITY;
         }
         else if(nr==0)
         {
@@ -54,7 +48,7 @@ public class Point
         }
         else if(dr==0)
         {
-            return Double.MAX_VALUE;
+            return Double.POSITIVE_INFINITY;
         }
         return nr/dr;
     }
